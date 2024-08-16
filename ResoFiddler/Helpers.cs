@@ -6,13 +6,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace PrivacyNotif
+namespace ResoFiddler
 {
     public class Helpers
     {
-        public static async Task<string> GetFaviconUrlAsync(string url)
+        public static async Task<string> GetFaviconUrlAsync(Uri uri)
         {
-            var uri = new Uri(url);
             string subdomain = $"{uri.Scheme}://{uri.Host}";
             string mainDomain = GetMainDomain(uri);
 
@@ -106,7 +105,7 @@ namespace PrivacyNotif
             return url;
         }
 
-        public static async Task<bool> IsValidImageUrl(string url)
+        public static async Task<bool> IsValidImageUrl(Uri url)
         {
             try
             {

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>PrivacyNotif</RootNamespace>
-		<AssemblyName>PrivacyNotif</AssemblyName>
+		<RootNamespace>ResoFiddler</RootNamespace>
+		<AssemblyName>ResoFiddler</AssemblyName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<TargetFramework>net472</TargetFramework>
 		<FileAlignment>512</FileAlignment>

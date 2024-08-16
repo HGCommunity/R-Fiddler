@@ -1,31 +1,27 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Elements.Core;
+using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
-using System;
-using System.Threading.Tasks;
-using FrooxEngine;
-using System.Reflection;
-using System.Collections.Generic;
-using Elements.Core;
-using FrooxEngine.UIX;
-using System.Collections;
-using System.Security.Policy;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Linq;
 
-namespace PrivacyNotif
+namespace ResoFiddler
 {
 	[HarmonyPatch]
-	class PrivacyNotif : ResoniteMod
+	class ResoFiddler : ResoniteMod
 	{
-		public override string Name => "ResoniteFiddler";
+		public override string Name => "R-Fiddler";
 		public override string Author => "NepuShiro, Knackrack615";
 		public override string Version => "1.0.0";
-		public override string Link => "https://github.com/HGCommunity/ResoFiddler";
+		public override string Link => "https://github.com/HGCommunity/R-Fiddler";
 		private static readonly MethodInfo addNotificationMethod = AccessTools.Method(typeof(NotificationPanel), "AddNotification", new Type[] { typeof(string), typeof(string), typeof(Uri), typeof(colorX), typeof(NotificationType), typeof(string), typeof(Uri), typeof(IAssetProvider<AudioClip>) });
 		private static List<string> TrustedDefaults = new List<string>();
 		private static Uri previousUri;
-		private static Uri ebicFavicon;
+		private static Uri previousFavicon;
 		private static DateTime previousUriChange;
 
 		[AutoRegisterConfigKey]
@@ -38,10 +34,13 @@ namespace PrivacyNotif
 		private static readonly ModConfigurationKey<int> COOLDOWN = new("cooldown", "The Cooldown between mutliple Notifcations for the same URL in Seconds. 0 to disable", () => 5);
 
 		[AutoRegisterConfigKey]
+		private static readonly ModConfigurationKey<Uri> PLACEHOLDERURI = new("placeholderuri", "The image to use when there's no image available", () => new("https://resonite.com/assets/images/logo.jpg"));
+
+		[AutoRegisterConfigKey]
 		private static readonly ModConfigurationKey<bool> NOTIFSOUND = new("NotifSound", "Should there be a sound for the Notif?", () => false);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<Uri> NOTIF_URI = new("notifuri", "Notifcation Sound Uri", () => new("resdb:///aba6554bd032a406c11b3b0bdb4e1214d2b12808891993e4fb498449f94e37a7.wav"));
+		private static readonly ModConfigurationKey<Uri> NOTIFSOUNDURI = new("notifuri", "Notifcation Sound Uri", () => new("resdb:///aba6554bd032a406c11b3b0bdb4e1214d2b12808891993e4fb498449f94e37a7.wav"));
 
 		private static ModConfiguration config;
 
@@ -52,7 +51,7 @@ namespace PrivacyNotif
 			config = GetConfiguration();
 			config.Save(true);
 
-			Harmony harmony = new Harmony("dev.nepushiro.ResonitePrivacyNotif");
+			Harmony harmony = new Harmony("dev.nepushiro.ResoniteR-Fiddler");
 			harmony.PatchAll();
 
 			TrustedDefaults = config.GetValue(TRUSTEDURI)
@@ -72,24 +71,29 @@ namespace PrivacyNotif
 			};
 		}
 
-		[HarmonyPatch(typeof(AssetManager), nameof(AssetManager.GatherAsset))]
-		[HarmonyPrefix]
-		private static bool PatchRequester(AssetManager __instance, EngineAssetGatherer ___assetGatherer, ref ValueTask<GatherResult> __result, Uri __0, float __1, SkyFrost.Base.DB_Endpoint? __2)
+		[HarmonyPatch(typeof(AssetManager))]
+		private static class AssetManagerPatch 
 		{
-			if (!config.GetValue(ENABLED)) return true;
+			
+			[HarmonyPrefix]
+			[HarmonyPatch("GatherAsset")]
+			private static bool GatherAssetPrefix(AssetManager __instance, EngineAssetGatherer ___assetGatherer, ref ValueTask<GatherResult> __result, Uri __0, float __1, SkyFrost.Base.DB_Endpoint? __2)
+			{
+				if (!config.GetValue(ENABLED)) return true;
 
-			__result = HandleRequest<GatherResult>(__instance, ___assetGatherer, __0, __1, __2);
-			return false;
-		}
+				__result = HandleRequest<GatherResult>(__instance, ___assetGatherer, __0, __1, __2);
+				return false;
+			}
 
-		[HarmonyPatch(typeof(AssetManager), nameof(AssetManager.GatherAssetFile))]
-		[HarmonyPrefix]
-		private static bool PatchRequester2(AssetManager __instance, EngineAssetGatherer ___assetGatherer, ref ValueTask<string> __result, Uri __0, float __1, SkyFrost.Base.DB_Endpoint? __2)
-		{
-			if (!config.GetValue(ENABLED)) return true;
+			[HarmonyPrefix]
+			[HarmonyPatch("GatherAssetFile")]
+			private static bool GatherAssetFilePrefix(AssetManager __instance, EngineAssetGatherer ___assetGatherer, ref ValueTask<string> __result, Uri __0, float __1, SkyFrost.Base.DB_Endpoint? __2)
+			{
+				if (!config.GetValue(ENABLED)) return true;
 
-			__result = HandleRequest<string>(__instance, ___assetGatherer, __0, __1, __2);
-			return false;
+				__result = HandleRequest<string>(__instance, ___assetGatherer, __0, __1, __2);
+				return false;
+			}
 		}
 
 		[HarmonyPatch(typeof(NotificationPanel))]
@@ -105,7 +109,7 @@ namespace PrivacyNotif
 
 		public static async Task<bool> AddNotification(colorX backgroundColor, Uri target, string notficationText = "N/A")
 		{
-			if (!config.GetValue(ENABLED) || target == ebicFavicon || (target == previousUri && DateTime.Now - previousUriChange < TimeSpan.FromSeconds(config.GetValue(COOLDOWN)))) return true;
+			if (!config.GetValue(ENABLED) || target == previousFavicon || (target == previousUri && DateTime.Now - previousUriChange < TimeSpan.FromSeconds(config.GetValue(COOLDOWN)))) return true;
 
 			try
 			{
@@ -114,7 +118,7 @@ namespace PrivacyNotif
 					StaticAudioClip clip = null;
 					NotificationPanel.Current.Slot.ForeachComponent<StaticAudioClip>((a) =>
 					{
-						if (a.URL == config.GetValue(NOTIF_URI))
+						if (a.URL == config.GetValue(NOTIFSOUNDURI))
 						{
 							clip = a;
 							return false;
@@ -122,32 +126,45 @@ namespace PrivacyNotif
 						return true;
 					});
 
-					clip ??= NotificationPanel.Current.Slot.AttachAudioClip(config.GetValue(NOTIF_URI), true);
+					clip ??= NotificationPanel.Current.Slot.AttachAudioClip(config.GetValue(NOTIFSOUNDURI), true);
 					NotificationPanel.Current.Slot.PlayOneShot(clip, 1f, false, 1f, parent: true, AudioDistanceSpace.Global);
 				}
 
 				World currentWorld = Engine.Current.WorldManager.FocusedWorld;
 				User localUser = currentWorld.LocalUser;
 
-				string uriString = string.IsNullOrEmpty(target.ToString()) ? "https://unknown.url" : target.ToString();
-				Uri worldThumbnail = new Uri("https://pic.nepunep.xyz/u/wretchedundefinedintrepidundefinedfantail.png");
-				Uri epicFavicon = new Uri(await Helpers.GetFaviconUrlAsync(uriString) ?? "https://pic.nepunep.xyz/u/wretchedundefinedintrepidundefinedfantail.png");
-                ebicFavicon = epicFavicon;
+				string[] uriPath = target.AbsolutePath.Split('?')[0].Split('/');
+				string uriStringified = $" {target.Host}...{string.Join("", uriPath.Skip(uriPath.Length - 1))} ";
+				
+				Uri worldThumbnail = config.GetValue(PLACEHOLDERURI);
+				Uri defaultFavicon = config.GetValue(PLACEHOLDERURI);
+				
+				Uri favicon = new Uri(await Helpers.GetFaviconUrlAsync(target));
+				Uri userIcon = await GetUserThumbnail(localUser?.UserID ?? Engine.Current?.Cloud?.CurrentUserID ?? "U-Resonite");
+				if (favicon != null)
+				{
+					defaultFavicon = favicon;
+				}
+				else if (userIcon != null)
+				{
+					defaultFavicon = userIcon;
+				}
+				
+				previousFavicon = defaultFavicon;
 
-                // Check if URI == GetFaviconUrlAsync(uriString) and dont show it to prevent duplicate notifications
-                if (currentWorld != null && !currentWorld.IsUserspace() && currentWorld.Name.ToLower() != "local")
+				if (currentWorld != null && !currentWorld.IsUserspace() && currentWorld.Name.ToLower() != "local")
 				{
 					worldThumbnail = new(currentWorld?.GenerateSessionInfo()?.ThumbnailUrl);
 				}
 
-				if (!string.IsNullOrEmpty(uriString) && await Helpers.IsValidImageUrl(uriString))
+				if (await Helpers.IsValidImageUrl(target))
 				{
 					worldThumbnail = target;
 				}
 
 				NotificationPanel.Current.RunSynchronously(() =>
 				{
-					addNotification(null, uriString, worldThumbnail, backgroundColor, Notif.Type, notficationText, epicFavicon, null);
+					addNotification(null, uriStringified, worldThumbnail, backgroundColor, Notif.Type, notficationText, defaultFavicon, null);
 					AddHyperLink(NotificationPanel.Current, target);
 				});
 
@@ -225,6 +242,7 @@ namespace PrivacyNotif
 			{
 				"http" => RadiantUI_Constants.Dark.RED,
 				"https" => RadiantUI_Constants.Dark.GREEN,
+				"ws" => RadiantUI_Constants.Dark.RED,
 				"wss" => RadiantUI_Constants.Dark.GREEN,
 				_ => RadiantUI_Constants.Dark.PURPLE,
 			};
