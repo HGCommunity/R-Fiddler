@@ -28,7 +28,7 @@ namespace R_Fiddler
 		private static readonly ModConfigurationKey<bool> ENABLED = new("Enabled", "Toggle notifications for external asset loading.", () => true);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<string> TRUSTEDURI = new("TrustedURI", "Trusted Domains.", () => "google.com, imgur.com, reddit.com, youtube.com, facebook.com, twitter.com, wikipedia.org, wikimedia.org, discordapp.net, resonite.com");
+		private static readonly ModConfigurationKey<string> TRUSTEDURI = new("TrustedURI", "List of trusted domains that won't trigger notifications.", () => "google.com, imgur.com, reddit.com, youtube.com, facebook.com, twitter.com, wikipedia.org, wikimedia.org, discordapp.net, resonite.com");
 
 		[AutoRegisterConfigKey]
 		private static readonly ModConfigurationKey<int> COOLDOWN = new("Cooldown", "Set a cooldown period (in seconds) between notifications for the same domain. 0 to disable", () => 5);
