@@ -25,22 +25,22 @@ namespace R_Fiddler
 		private static DateTime previousUriChange;
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<bool> ENABLED = new("Enabled", "Show a notification every time an external asset tries to load.", () => true);
+		private static readonly ModConfigurationKey<bool> ENABLED = new("Enabled", "Toggle notifications for external asset loading.", () => true);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<string> TRUSTEDURI = new("TrustedURI", "Trusted URIs.", () => "google.com, imgur.com, reddit.com, youtube.com, facebook.com, twitter.com, wikipedia.org, wikimedia.org, discordapp.net, resonite.com");
+		private static readonly ModConfigurationKey<string> TRUSTEDURI = new("TrustedURI", "Trusted Domains.", () => "google.com, imgur.com, reddit.com, youtube.com, facebook.com, twitter.com, wikipedia.org, wikimedia.org, discordapp.net, resonite.com");
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<int> COOLDOWN = new("cooldown", "Cooldown between mutliple Notifcations for the same domain in Seconds. 0 to disable", () => 5);
+		private static readonly ModConfigurationKey<int> COOLDOWN = new("Cooldown", "Set a cooldown period (in seconds) between notifications for the same domain. 0 to disable", () => 5);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<Uri> PLACEHOLDERURI = new("placeholderuri", "The image to use when there's no image available", () => new("resdb:///264a3cdc5c149326aefd44d40b23a068032c716d3966ca5dc883775eb236ac10.webp"));
+		private static readonly ModConfigurationKey<Uri> PLACEHOLDERURI = new("PlaceholderURI", "Specify an image to use when no image is available.", () => new("resdb:///264a3cdc5c149326aefd44d40b23a068032c716d3966ca5dc883775eb236ac10.webp"));
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<bool> NOTIFSOUND = new("NotifSound", "Play a sound for the asset notifications.", () => false);
+		private static readonly ModConfigurationKey<bool> NOTIFSOUND = new("NotifSound", "Enable or disable sound for notifications.", () => false);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<Uri> NOTIFSOUNDURI = new("notifuri", "Notifcation Sound URI", () => new("resdb:///aba6554bd032a406c11b3b0bdb4e1214d2b12808891993e4fb498449f94e37a7.wav"));
+		private static readonly ModConfigurationKey<Uri> NOTIFSOUNDURI = new("NotifURI", "Set the sound file for notifications.", () => new("resdb:///aba6554bd032a406c11b3b0bdb4e1214d2b12808891993e4fb498449f94e37a7.wav"));
 
 		private static ModConfiguration config;
 
