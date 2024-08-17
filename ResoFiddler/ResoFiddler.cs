@@ -9,10 +9,10 @@ using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
 
-namespace ResoFiddler
+namespace R_Fiddler
 {
 	[HarmonyPatch]
-	class ResoFiddler : ResoniteMod
+	class R_Fiddler : ResoniteMod
 	{
 		public override string Name => "R-Fiddler";
 		public override string Author => "NepuShiro, Knackrack615";
@@ -25,22 +25,22 @@ namespace ResoFiddler
 		private static DateTime previousUriChange;
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<bool> ENABLED = new("Enabled", "If the hosts permission request should send a notif for all assets.", () => true);
+		private static readonly ModConfigurationKey<bool> ENABLED = new("Enabled", "Show a notification every time an external asset tries to load.", () => true);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<string> TRUSTEDURI = new("TrustedURI", "Trusted URIs that don't need permission requests.", () => "google.com, imgur.com, reddit.com, youtube.com, facebook.com, twitter.com, wikipedia.org, wikimedia.org, discordapp.net, resonite.com, skyfrost-archive.resonite.com");
+		private static readonly ModConfigurationKey<string> TRUSTEDURI = new("TrustedURI", "Trusted URIs.", () => "google.com, imgur.com, reddit.com, youtube.com, facebook.com, twitter.com, wikipedia.org, wikimedia.org, discordapp.net, resonite.com");
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<int> COOLDOWN = new("cooldown", "The Cooldown between mutliple Notifcations for the same URL in Seconds. 0 to disable", () => 5);
+		private static readonly ModConfigurationKey<int> COOLDOWN = new("cooldown", "Cooldown between mutliple Notifcations for the same domain in Seconds. 0 to disable", () => 5);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<Uri> PLACEHOLDERURI = new("placeholderuri", "The image to use when there's no image available", () => new("https://resonite.com/assets/images/logo.jpg"));
+		private static readonly ModConfigurationKey<Uri> PLACEHOLDERURI = new("placeholderuri", "The image to use when there's no image available", () => new("resdb:///264a3cdc5c149326aefd44d40b23a068032c716d3966ca5dc883775eb236ac10.webp"));
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<bool> NOTIFSOUND = new("NotifSound", "Should there be a sound for the Notif?", () => false);
+		private static readonly ModConfigurationKey<bool> NOTIFSOUND = new("NotifSound", "Play a sound for the asset notifications.", () => false);
 
 		[AutoRegisterConfigKey]
-		private static readonly ModConfigurationKey<Uri> NOTIFSOUNDURI = new("notifuri", "Notifcation Sound Uri", () => new("resdb:///aba6554bd032a406c11b3b0bdb4e1214d2b12808891993e4fb498449f94e37a7.wav"));
+		private static readonly ModConfigurationKey<Uri> NOTIFSOUNDURI = new("notifuri", "Notifcation Sound URI", () => new("resdb:///aba6554bd032a406c11b3b0bdb4e1214d2b12808891993e4fb498449f94e37a7.wav"));
 
 		private static ModConfiguration config;
 
@@ -51,7 +51,7 @@ namespace ResoFiddler
 			config = GetConfiguration();
 			config.Save(true);
 
-			Harmony harmony = new Harmony("dev.nepushiro.ResoniteR-Fiddler");
+			Harmony harmony = new Harmony("net.HGCommunity.R-Fiddler");
 			harmony.PatchAll();
 
 			TrustedDefaults = config.GetValue(TRUSTEDURI)
@@ -128,26 +128,20 @@ namespace ResoFiddler
 
 					clip ??= NotificationPanel.Current.Slot.AttachAudioClip(config.GetValue(NOTIFSOUNDURI), true);
 					NotificationPanel.Current.Slot.PlayOneShot(clip, 1f, false, 1f, parent: true, AudioDistanceSpace.Global);
-				}
+                }
 
 				World currentWorld = Engine.Current.WorldManager.FocusedWorld;
-				User localUser = currentWorld.LocalUser;
 
-				string[] uriPath = target.AbsolutePath.Split('?')[0].Split('/');
-				string uriStringified = $" {target.Host}...{string.Join("", uriPath.Skip(uriPath.Length - 1))} ";
-				
-				Uri worldThumbnail = config.GetValue(PLACEHOLDERURI);
+                string[] uriPath = target.AbsolutePath.Split('?')[0].Split('/');
+				string uriStringified = $"<nobr>{target.Host}...{string.Join("", uriPath.Skip(uriPath.Length - 1))}";
+
+                Uri worldThumbnail = config.GetValue(PLACEHOLDERURI);
 				Uri defaultFavicon = config.GetValue(PLACEHOLDERURI);
 				
-				Uri favicon = new Uri(await Helpers.GetFaviconUrlAsync(target));
-				Uri userIcon = await GetUserThumbnail(localUser?.UserID ?? Engine.Current?.Cloud?.CurrentUserID ?? "U-Resonite");
+				Uri favicon = new Uri(await Helpers.GetFaviconUrlAsync(target) ?? config.GetValue(PLACEHOLDERURI).ToString());
 				if (favicon != null)
 				{
 					defaultFavicon = favicon;
-				}
-				else if (userIcon != null)
-				{
-					defaultFavicon = userIcon;
 				}
 				
 				previousFavicon = defaultFavicon;
@@ -164,8 +158,8 @@ namespace ResoFiddler
 
 				NotificationPanel.Current.RunSynchronously(() =>
 				{
-					addNotification(null, uriStringified, worldThumbnail, backgroundColor, Notif.Type, notficationText, defaultFavicon, null);
-					AddHyperLink(NotificationPanel.Current, target);
+                    addNotification(null, uriStringified, worldThumbnail, backgroundColor, Notif.Type, notficationText, defaultFavicon, null);
+                    AddHyperLink(NotificationPanel.Current, target);
 				});
 
 				previousUri = target;
@@ -215,7 +209,7 @@ namespace ResoFiddler
 
 		private static async ValueTask<T> HandleRequest<T>(AssetManager assetManager, EngineAssetGatherer assetGatherer, Uri uri, float priority, SkyFrost.Base.DB_Endpoint? endpointOverwrite)
 		{
-			if (uri.Scheme == "resdb" || uri.Scheme == "local" || TrustedDefaults.Any(a => uri.Host.EndsWith(a)) || uri.Host.EndsWith("resonite.com") || uri.AbsolutePath.Contains("favicon.ico") || await AskForPermission(uri))
+			if (uri.Scheme == "resdb" || uri.Scheme == "local" || TrustedDefaults.Any(a => uri.Host.EndsWith(a)) || await AskForPermission(uri))
 			{
 				if (typeof(T) == typeof(string))
 				{

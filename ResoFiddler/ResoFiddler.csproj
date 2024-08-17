@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>ResoFiddler</RootNamespace>
-		<AssemblyName>ResoFiddler</AssemblyName>
+		<RootNamespace>R_Fiddler</RootNamespace>
+		<AssemblyName>R-Fiddler</AssemblyName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<TargetFramework>net472</TargetFramework>
 		<FileAlignment>512</FileAlignment>

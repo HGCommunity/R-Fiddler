@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ResoFiddler")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("R-Fiddler")]
+[assembly: AssemblyDescription("Fiddler, but for the FrooxEngine (kinda)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("NepuShiro, Knackrack615")]
-[assembly: AssemblyProduct("ResoFiddler")]
-[assembly: AssemblyCopyright("Copyright ©  2024")]
+[assembly: AssemblyProduct("R-Fiddler")]
+[assembly: AssemblyCopyright("Copyright © HGCommunity 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
