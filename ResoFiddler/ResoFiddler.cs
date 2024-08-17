@@ -182,28 +182,13 @@ namespace R_Fiddler
 				var items = Traverse.Create(notificationPanel).Field("_items").GetValue<IList>();
 				var root = Traverse.Create(items[items.Count - 1]).Field("root").GetValue<Slot>();
 
-				root.AttachComponent<Hyperlink>().URL.Value = uri;
+				var link = root.AttachComponent<Hyperlink>();
+				link.URL.Value = uri;
+				link.Reason.Value = "Open Asset in Browser";
 			}
 			catch (Exception ex)
 			{
 				Msg("Error adding world focus: " + ex);
-			}
-		}
-
-		private static async Task<Uri> GetUserThumbnail(string userId)
-		{
-			try
-			{
-				var cloudUserProfile = (await Engine.Current.Cloud.Users.GetUser(userId))?.Entity?.Profile;
-				Uri.TryCreate(cloudUserProfile?.IconUrl, UriKind.Absolute, out Uri thumbnail);
-				thumbnail ??= OfficialAssets.Graphics.Thumbnails.AnonymousHeadset;
-
-				return thumbnail;
-			}
-			catch (Exception ex)
-			{
-				Msg("Error getting user thumbnail: " + ex);
-				return null;
 			}
 		}
 
