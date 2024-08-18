@@ -169,7 +169,7 @@ namespace R_Fiddler
 			}
 			catch (Exception ex)
 			{
-				Msg("Error adding notification: " + ex);
+				Error("Error adding notification: " + ex);
 				return true;
 			}
 		}
@@ -188,7 +188,7 @@ namespace R_Fiddler
 			}
 			catch (Exception ex)
 			{
-				Msg("Error adding world focus: " + ex);
+				Error("Error adding world focus: " + ex);
 			}
 		}
 
