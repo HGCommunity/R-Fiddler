@@ -15,8 +15,8 @@ namespace R_Fiddler
 	class R_Fiddler : ResoniteMod
 	{
 		public override string Name => "R-Fiddler";
-		public override string Author => "NepuShiro, Knackrack615";
-		public override string Version => "1.0.0";
+		public override string Author => "NepuShiro, Knackrack615, LeCloutPanda";
+		public override string Version => "1.0.1";
 		public override string Link => "https://github.com/HGCommunity/R-Fiddler";
 		private static readonly MethodInfo addNotificationMethod = AccessTools.Method(typeof(NotificationPanel), "AddNotification", new Type[] { typeof(string), typeof(string), typeof(Uri), typeof(colorX), typeof(NotificationType), typeof(string), typeof(Uri), typeof(IAssetProvider<AudioClip>) });
 		private static List<string> TrustedDefaults = new List<string>();
@@ -127,7 +127,7 @@ namespace R_Fiddler
 					});
 
 					clip ??= NotificationPanel.Current.Slot.AttachAudioClip(config.GetValue(NOTIFSOUNDURI), true);
-					NotificationPanel.Current.Slot.PlayOneShot(clip, 1f, false, 1f, parent: true, AudioDistanceSpace.Global);
+					NotificationPanel.Current.Slot.PlayOneShot(clip, 1f, false, true, 1f, true, AudioDistanceSpace.Global);
                 }
 
 				World currentWorld = Engine.Current.WorldManager.FocusedWorld;
