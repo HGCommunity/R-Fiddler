@@ -1,4 +1,5 @@
 # R-Fiddler
+[![Thunderstore Badge](https://gist.githubusercontent.com/art0007i/c4871bbdb30d31e7899328754916bb81/raw/076910e4939e624f17c88bd879770d3bd2fe3f1e/available-on-thunderstore.svg)](https://thunderstore.io/c/resonite/)
 
 A Resonite mod that provides real-time notifications for external asset requests. 
 Monitor and preview assets in a session, see favicons, and customize your experience with configurable settings.
@@ -24,9 +25,11 @@ https://github.com/user-attachments/assets/dc5baec5-f7e5-4314-a660-e7521c703991
 
 ## Installation
 
-1. Install [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader).
-2. Place `R-Fiddler.dll` into your `rml_mods` folder. This folder should be at `C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods` for a default install. You can create it if it's missing, or if you launch the game once with ResoniteModLoader installed it will create the folder for you.
-3. Start the game. If you want to verify that the mod is working, you should see notifications appear when external assets are requested.
+1. Install [BepisLoader](https://github.com/ResoniteModding/BepisLoader) for Resonite.
+2. Download the latest release ZIP file (e.g., `HGCommunity-R-Fiddler-2.0.0.zip`) from the [Releases](https://github.com/HGCommunity/R-Fiddler/releases) page.
+3. Extract the ZIP and copy the `plugins` folder to your BepInEx folder in your Resonite installation directory:
+   - **Default location:** `C:\Program Files (x86)\Steam\steamapps\common\Resonite\BepInEx\`
+4. Start the game. If you want to verify that the mod is working you can check your BepInEx logs.
 
 ## Usage
 
@@ -43,11 +46,9 @@ R-Fiddler has several configurable options:
 - **NotifSound**: Enable or disable sound for notifications.
 - **NotifURI**: Set the sound file for notifications.
 
-These settings can be adjusted in the mod's configuration file, or in-game using the [ResoniteModSettings](https://github.com/badhaloninja/ResoniteModSettings) mod.
-
 ## Compatibility
 
-R-Fiddler is designed to be compatible with the latest version of Resonite and ResoniteModLoader. If you encounter any issues, please report them in the Issues section of this repository.
+R-Fiddler is designed to be compatible with the latest version of Resonite and BepisLoader. If you encounter any issues, please report them in the Issues section of this repository.
 
 ## Contributing
 
@@ -55,9 +56,4 @@ Contributions to R-Fiddler are welcome! Please feel free to submit pull requests
 
 ## License
 
-[MIT License](https://github.com/HGCommunity/R-Fiddler/blob/master/LICENSE.txt)
-
-## Acknowledgements
-
-- The Resonite development team for creating an amazing platform
-- The ResoniteModLoader team for making modding possible
+[MIT License](https://github.com/HGCommunity/R-Fiddler/blob/master/LICENSE)

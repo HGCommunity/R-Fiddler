@@ -1,0 +1,37 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "HGCommunity"
+name = "R_Fiddler"
+versionNumber = "2.0.0"
+description = "A Resonite mod that provides real-time notifications for external asset requests."
+websiteUrl = "https://github.com/HGCommunity/R-Fiddler"
+containsNsfwContent = false
+
+[package.dependencies]
+ResoniteModding-BepisLoader = "1.3.1"
+
+[build]
+icon = "./icon.png"
+readme = "./README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "./bin/Release/R-Fiddler.dll"
+target = "plugins/R-Fiddler/"
+
+[[build.copy]]
+source = "./bin/Release/R-Fiddler.pdb"
+target = "plugins/R-Fiddler/"
+
+[[build.copy]]
+source = "LICENSE"
+target = "/"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["resonite"]
+
+[publish.categories]
+resonite = ["technicaltweaks", "visualtweaks", "tools"]
